@@ -5,13 +5,32 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 const DEBOUNCE_DELAY = 300;
 const inputRef = document.querySelector('input#search-box');
+const countriesListRef = document.querySelector('ul.country-list');
+const countryRef = document.querySelector('div.country-info');
 
 inputRef.addEventListener('input', onInputChange);
-const debouncedSearch = debounce(fetchCountries, DEBOUNCE_DELAY);
 
 function onInputChange(e) {
   const query = e.currentTarget.value;
   const structuredQuery = query.trim().toLowerCase();
   console.log(structuredQuery);
-  debouncedSearch(structuredQuery);
+  fetchCountries(structuredQuery)
+    .then(data => {
+      if (data.length > 10) {
+        notifyTooMuchCountries();
+      }
+      data.forEach(country => {
+        console.log(country.name);
+        console.log(country.capital);
+        console.log(country.population);
+        console.log(country.flags);
+        console.log(country.languages);
+      });
+    })
+    .catch(err => console.log(err));
+}
+
+
+function notifyTooMuchCountries() {
+  Notify.info('Too many matches found. Please enter a more specific name.');
 }
