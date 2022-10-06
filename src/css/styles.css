@@ -31,3 +31,17 @@ body {
   gap: 15px;
   font-weight: 700;
 }
+
+.flag-svg {
+  display: block;
+}
+
+.info-container {
+  display: flex;
+  gap: 15px;
+  align-items: baseline;
+}
+
+.info-title {
+  font-weight: 500;
+}
