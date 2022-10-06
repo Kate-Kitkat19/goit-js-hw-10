@@ -9,29 +9,47 @@ const countriesListRef = document.querySelector('ul.country-list');
 const countryRef = document.querySelector('div.country-info');
 const debouncedSearch = debounce(onInputChange, DEBOUNCE_DELAY);
 
-inputRef.addEventListener('input', debouncedSearch);
+inputRef.addEventListener('input', onInputChange);
 
 function onInputChange(e) {
   const query = e.currentTarget.value;
-  console.log('onInputChange   query', query);
   const structuredQuery = query.trim().toLowerCase();
-  console.log(structuredQuery);
+  if (!structuredQuery) {
+    clearHTML();
+    return;
+  }
   fetchCountries(structuredQuery)
     .then(data => {
       if (data.length > 10) {
         notifyTooMuchCountries();
+        return;
       }
-      data.forEach(country => {
-        console.log(country.name);
-        console.log(country.capital);
-        console.log(country.population);
-        console.log(country.flags);
-        console.log(country.languages);
-      });
+      if (data.length > 1) {
+        const markupList = renderMarkupList(data);
+        countriesListRef.insertAdjacentHTML('beforeend', markupList);
+      }
     })
     .catch(err => console.log(err));
 }
 
 function notifyTooMuchCountries() {
   Notify.info('Too many matches found. Please enter a more specific name.');
+}
+
+function renderMarkupList(list) {
+  return list
+    .map(country => {
+      const { name, flags } = country;
+      return `<li class="list-item">
+        <img src="${flags.svg}" class="flag-svg" width="60" alt="${name}">
+          <p class="item-text">${name}</p>
+        </img>
+      </li>`;
+    })
+    .join('');
+}
+
+function clearHTML() {
+  countriesListRef.innerHTML = '';
+  countryRef.innerHTML = '';
 }
