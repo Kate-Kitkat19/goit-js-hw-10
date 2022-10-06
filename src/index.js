@@ -7,11 +7,13 @@ const DEBOUNCE_DELAY = 300;
 const inputRef = document.querySelector('input#search-box');
 const countriesListRef = document.querySelector('ul.country-list');
 const countryRef = document.querySelector('div.country-info');
+const debouncedSearch = debounce(onInputChange, DEBOUNCE_DELAY);
 
-inputRef.addEventListener('input', onInputChange);
+inputRef.addEventListener('input', debouncedSearch);
 
 function onInputChange(e) {
   const query = e.currentTarget.value;
+  console.log('onInputChange   query', query);
   const structuredQuery = query.trim().toLowerCase();
   console.log(structuredQuery);
   fetchCountries(structuredQuery)
@@ -29,7 +31,6 @@ function onInputChange(e) {
     })
     .catch(err => console.log(err));
 }
-
 
 function notifyTooMuchCountries() {
   Notify.info('Too many matches found. Please enter a more specific name.');
