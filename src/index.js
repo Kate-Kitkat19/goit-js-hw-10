@@ -1,33 +1,34 @@
 import './css/styles.css';
 import debounce from 'lodash.debounce';
 import { fetchCountries } from './js/fetchCountries';
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import { inputRef, countriesListRef, countryRef } from './js/refs';
 import {
   renderMarkupList,
   renderMarkupCountry,
   clearHTML,
 } from './js/renderDOM';
+import { notifyTooMuchCountries } from './js/notification';
 
 const DEBOUNCE_DELAY = 300;
-const debouncedSearch = debounce(onInputChange, DEBOUNCE_DELAY);
 
-inputRef.addEventListener('input', onInputChange);
+inputRef.addEventListener('input', debounce(onInputChange, DEBOUNCE_DELAY));
 
 function onInputChange(e) {
-  const query = e.currentTarget.value;
+  const query = e.target.value.trim().toLowerCase();
+
   if (!query) {
     clearHTML();
     return;
   }
-  const structuredQuery = query.trim().toLowerCase();
-  fetchCountries(structuredQuery)
+
+  fetchCountries(query)
     .then(data => {
       if (data.length > 10) {
         notifyTooMuchCountries();
         return;
       }
-      if (data.length > 1) {
+      if (data.length >= 2 && data.length <= 10) {
+        clearHTML();
         const markupList = renderMarkupList(data);
         countriesListRef.insertAdjacentHTML('beforeend', markupList);
       }
@@ -40,6 +41,4 @@ function onInputChange(e) {
     .catch(err => console.log(err));
 }
 
-function notifyTooMuchCountries() {
-  Notify.info('Too many matches found. Please enter a more specific name.');
-}
+
