@@ -15,18 +15,14 @@ function renderMarkupList(list) {
 
 function renderMarkupCountry(country) {
   const { name, capital, flags, languages, population } = country;
-  const languagesList = [];
-  for (const language of languages) {
-    languagesList.push(language.name);
-  }
-  const separatedList = languagesList.join(', ');
+  const languagesList = languages.map(language => language.name).join(', ');
   return `<div class="info-container">
   <img src="${flags.svg}" class="flag-svg" width="60" height="30" alt='${name}'/>
       <h2 class="country-name">${name}</h2></div>
       <ul class="country-list">
         <li><span class="info-title">Capital: </span>${capital}</li>
         <li><span class="info-title">Population: </span>${population}</li>
-        <li><span class="info-title">Languages: </span>${separatedList}</li>
+        <li><span class="info-title">Languages: </span>${languagesList}</li>
       </ul>`;
 }
 
